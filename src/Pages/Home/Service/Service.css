@@ -1,0 +1,13 @@
+
+
+.service{
+    /* width: 375px; */
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    padding: 10px 5px;
+    text-align: center;
+}
+
+.service img{
+    border-radius: 8px;
+}
