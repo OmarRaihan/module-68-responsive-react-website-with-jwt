@@ -1,23 +1,34 @@
 import React, { useRef } from "react";
 import { Button, Form } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import auth from "../../../firebase.init";
 
 const Login = () => {
-    const emailRef = useRef('');
-    const passwordRef = useRef('');
-    const navigate = useNavigate();
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const handleSubmit = event =>{
-        event.preventDefault();
-        const email = emailRef.current.value;
-        const password = passwordRef.current.value;
+  let from = location.state?.from?.pathname || "/";
 
-        console.log(email, password);
-    } 
+  const [signInWithEmailAndPassword, user] = useSignInWithEmailAndPassword(auth);
 
-    const navigateRegister = event =>{
-        navigate('/register')
-    }
+  if (user) {
+    navigate(from, { replace: true });
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+
+    signInWithEmailAndPassword(email, password);
+  };
+
+  const navigateRegister = (event) => {
+    navigate("/register");
+  };
 
   return (
     <div className="container w-50 mx-auto mt-3">
@@ -41,7 +52,12 @@ const Login = () => {
           Submit
         </Button>
       </Form>
-      <p>New to Genius Car? <Link to="/register" className="text-danger text-decoration-none" onClick={navigateRegister}>Please Register</Link></p>
+      <p>
+        New to Genius Car?{" "}
+        <Link to="/register" className="text-danger text-decoration-none" onClick={navigateRegister}>
+          Please Register
+        </Link>
+      </p>
     </div>
   );
 };
