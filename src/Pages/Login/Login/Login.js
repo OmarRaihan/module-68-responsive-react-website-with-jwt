@@ -8,6 +8,7 @@ import SocialLogin from "../SocialLogin/SocialLogin";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PageTitle from "../../Shared/PageTitle/PageTitle";
+import axios from "axios";
 
 const Login = () => {
   const emailRef = useRef("");
@@ -23,19 +24,22 @@ const Login = () => {
   const [sendPasswordResetEmail, sending] = useSendPasswordResetEmail(auth);
 
   if (user) {
-    navigate(from, { replace: true });
+    // navigate(from, { replace: true });
   }
 
   if (error) {
     errorElement = <p className="text-danger">Error: {error?.message}</p>;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
-    signInWithEmailAndPassword(email, password);
+    await signInWithEmailAndPassword(email, password);
+    const { data } = await axios.post("http://localhost:5000/login", { email });
+    localStorage.setItem("accessToken", data.accessToken);
+    navigate(from, { replace: true });
   };
 
   const navigateRegister = (event) => {
@@ -47,9 +51,8 @@ const Login = () => {
     if (email) {
       await sendPasswordResetEmail(email);
       toast("Sent email");
-    }
-    else{
-      toast('Please enter your email')
+    } else {
+      toast("Please enter your email");
     }
   };
 
@@ -59,12 +62,10 @@ const Login = () => {
       <h2 className="text-primary text-center">Please Login</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
           <Form.Control ref={emailRef} type="email" placeholder="Enter email" required />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
           <Form.Control ref={passwordRef} type="password" placeholder="Password" required />
         </Form.Group>
 
